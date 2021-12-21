@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://image7127280535.jpg" type="Texture" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -13,49 +13,9 @@ shader_param/strengthEffect = 0.3
 shader = ExtResource( 4 )
 shader_param/strengthEffect = 0.3
 
-[sub_resource type="Shader" id=10]
-code = "shader_type canvas_item;
-
-uniform float strength = 0.3;
-const float effectRadius = 0.5;
-const float effectRadiusCoefficient = 0.3;
-const float horizonRadius = 0.12;
-
-float circle(vec2 position, float radius, float feather)
-{
-	return smoothstep(radius, radius + feather, length(position - vec2(0.5)));
-}
-
-void fragment(){
-	vec2 vecToCenter = vec2(0.5, 0.5) - vec2(UV.x, 1f-UV.y);
-	float distToCenter = length(vecToCenter);
-	vec2 direction = normalize(vecToCenter);
-	vec3 col = texture(SCREEN_TEXTURE, SCREEN_UV).xyz; // pixel from texture
-
-	float effect_pixel = circle(UV, 0.1, effectRadius + effectRadiusCoefficient);
-
-	float effectValue = clamp(effectRadius - effect_pixel, 0f, 1f);  // from 0 to 1. 
-	float displacement = smoothstep(0f, 1f, effectValue*strength);
-
-	vec2 uv = SCREEN_UV + direction*displacement;
-	
-	if(distToCenter < horizonRadius){
-		col = vec3(0,0,0); // drow horizon radius
-	} 
-	else if (distToCenter < effectRadius && distToCenter > horizonRadius)
-	{
-		// drow effect radius
-		col = texture(SCREEN_TEXTURE, uv).xyz;
-	}
-	COLOR = vec4(col, 1f);
-	
-}
-
-"
-
 [sub_resource type="ShaderMaterial" id=11]
-shader = SubResource( 10 )
-shader_param/strength = 0.3
+shader = ExtResource( 4 )
+shader_param/strengthEffect = 0.3
 
 [node name="Root" type="Node2D"]
 
