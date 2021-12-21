@@ -1,0 +1,154 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://image7127280535.jpg" type="Texture" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://BlackHole.gd" type="Script" id=3]
+[ext_resource path="res://BlackHole.gdshader" type="Shader" id=4]
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = ExtResource( 4 )
+shader_param/strengthEffect = 0.3
+
+[sub_resource type="ShaderMaterial" id=9]
+shader = ExtResource( 4 )
+shader_param/strengthEffect = 0.3
+
+[sub_resource type="Shader" id=10]
+code = "shader_type canvas_item;
+
+uniform float strength = 0.3;
+const float effectRadius = 0.5;
+const float effectRadiusCoefficient = 0.3;
+const float horizonRadius = 0.12;
+
+float circle(vec2 position, float radius, float feather)
+{
+	return smoothstep(radius, radius + feather, length(position - vec2(0.5)));
+}
+
+void fragment(){
+	vec2 vecToCenter = vec2(0.5, 0.5) - vec2(UV.x, 1f-UV.y);
+	float distToCenter = length(vecToCenter);
+	vec2 direction = normalize(vecToCenter);
+	vec3 col = texture(SCREEN_TEXTURE, SCREEN_UV).xyz; // pixel from texture
+
+	float effect_pixel = circle(UV, 0.1, effectRadius + effectRadiusCoefficient);
+
+	float effectValue = clamp(effectRadius - effect_pixel, 0f, 1f);  // from 0 to 1. 
+	float displacement = smoothstep(0f, 1f, effectValue*strength);
+
+	vec2 uv = SCREEN_UV + direction*displacement;
+	
+	if(distToCenter < horizonRadius){
+		col = vec3(0,0,0); // drow horizon radius
+	} 
+	else if (distToCenter < effectRadius && distToCenter > horizonRadius)
+	{
+		// drow effect radius
+		col = texture(SCREEN_TEXTURE, uv).xyz;
+	}
+	COLOR = vec4(col, 1f);
+	
+}
+
+"
+
+[sub_resource type="ShaderMaterial" id=11]
+shader = SubResource( 10 )
+shader_param/strength = 0.3
+
+[node name="Root" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
+
+[node name="TextureRect" type="TextureRect" parent="Camera2D/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 1 )
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BlackHole" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 2 )
+position = Vector2( 601, 133 )
+scale = Vector2( 2.42806, 2.32443 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 836, 526 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="BlackHole2" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 2 )
+position = Vector2( 185, 163 )
+scale = Vector2( 2.42806, 2.32443 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy5" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 836, 526 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="BlackHole6" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 2 )
+position = Vector2( 601, 484 )
+scale = Vector2( 2.42806, 2.32443 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy2" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 839, 526 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="BlackHole3" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 9 )
+position = Vector2( 819, 466 )
+scale = Vector2( 6, 6 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy4" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 839, 526 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="BlackHole5" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 9 )
+position = Vector2( 415, 157 )
+scale = Vector2( 6, 6 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy3" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 702, 513 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="BlackHole4" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 2 )
+position = Vector2( 375, 498 )
+scale = Vector2( 2.42806, 2.32443 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="BackBufferCopy6" type="BackBufferCopy" parent="Camera2D/CanvasLayer/TextureRect"]
+position = Vector2( 702, 513 )
+scale = Vector2( 8.34, 5.26 )
+copy_mode = 2
+
+[node name="StaticBlackHole" type="Sprite" parent="Camera2D/CanvasLayer/TextureRect"]
+material = SubResource( 11 )
+position = Vector2( 823, 140 )
+scale = Vector2( 2, 2 )
+texture = ExtResource( 2 )
+
+[connection signal="resized" from="Camera2D/CanvasLayer/TextureRect" to="Camera2D/CanvasLayer/TextureRect/BlackHole" method="_on_TextureRect_resized"]
